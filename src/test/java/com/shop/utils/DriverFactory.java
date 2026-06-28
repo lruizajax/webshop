@@ -2,6 +2,7 @@ package com.shop.utils;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 public class DriverFactory {
 
@@ -24,8 +25,18 @@ public class DriverFactory {
     }
 
     public static WebDriver createDriver() {
-        ChromeDriver chromeDriver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        if (isCI()) {
+            options.addArguments("--headless=new");
+        }
+        ChromeDriver chromeDriver = new ChromeDriver(options);
         chromeDriver.manage().window().maximize();
         return chromeDriver;
+    }
+
+    private static boolean isCI() {
+        return "true".equalsIgnoreCase(System.getenv("CI"));
     }
 }
