@@ -20,13 +20,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-# step 3 : instala Chrome y ChromeDriver
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
-        with:
-          install-chromedriver: true
-
-# step 4 : descarga las dependencias del proyecto
+# step 3 : descarga las dependencias del proyecto
       - name: Maven Dependencies
         uses: actions/cache@v4
         with:
@@ -35,7 +29,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-# step 5 : instalacion de Allure report
+# step 4 : instalacion de Allure report
       - name: Install Allure Commandline
         run: |
           ALLURE_VERSION=2.43.0
@@ -43,20 +37,20 @@ jobs:
           tar -zxvf allure-${ALLURE_VERSION}.tgz
           echo "$PWD/allure-${ALLURE_VERSION}/bin" >> $GITHUB_PATH
 
-# step 6 : verifica la version de allure
+# step 5 : verifica la version de allure
       - name: Check Allure version
         run: allure --version
 
-# step 7 : ejecuta los tests de cucumber
+# step 6 : ejecuta los tests de cucumber
       - name: Run Cucumber Tests
         run:  mvn clean verify -Dcucumber.filter.tags="@regression"
 
-# step 8 : genera el reporte de allure
+# step 7 : genera el reporte de allure
       - name: Generate Allure Report
         if: always()
         run: allure generate target/allure-results --clean -o target/allure-report
 
-# step 9 : publica reportes de cucumber
+# step 8 : publica reportes de cucumber
       - name: upload cucumber report
         if: always()
         uses: actions/upload-artifact@v4
@@ -67,7 +61,7 @@ jobs:
             target/cucumber-reports/cucumber.json
             target/cucumber-reports/cucumber.xml
 
-# step 10 : publica el reporte de allure
+# step 9 : publica el reporte de allure
       - name: Publish Allure Report
         if: always()
         uses: actions/upload-artifact@v4
